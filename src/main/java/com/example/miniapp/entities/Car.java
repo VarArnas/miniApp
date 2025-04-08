@@ -1,4 +1,4 @@
-package com.example.miniapp.entities.JPA;
+package com.example.miniapp.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,11 +23,26 @@ public class Car {
     @Column(name = "model", nullable = false)
     private String model;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+//    @ManyToMany
     @JoinTable(
             name = "car_car_part",
             joinColumns = @JoinColumn(name = "car_id"),
             inverseJoinColumns = @JoinColumn(name = "car_part_id")
     )
     private List<CarPart> parts = new ArrayList<>();
+
+    public void addPart(CarPart part) {
+        parts.add(part);
+        if (!part.getCars().contains(this)) {
+            part.addCar(this);
+        }
+    }
+
+    public void removePart(CarPart part) {
+        parts.remove(part);
+        if(part.getCars().contains(this)) {
+            part.removeCar(this);
+        }
+    }
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.miniapp.daos.ShopMapper">
+
+    <resultMap id="carPartResultMap" type="CarPart">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <association property="mechanicShop" javaType="MechanicShop">
+            <id property="id" column="id"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="shopWithPartsResultMap" type="MechanicShop">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+
+        <collection
+                property="parts"
+                ofType="CarPart"
+                resultMap="carPartResultMap"/>
+    </resultMap>
+
+    <resultMap id="allShopsResult" type="MechanicShop">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+
+    <insert id="insertShop">
+        INSERT INTO mechanic_shop (id, name)
+        VALUES (#{id}, #{name})
+    </insert>
+
+    <select id="findAllShops" resultMap="allShopsResult">
+        SELECT *
+        FROM mechanic_shop
+    </select>
+
+    <select id="findShopByNameWithParts" resultMap="shopWithPartsResultMap">
+        SELECT
+            ms.id as shop_id,
+            ms.name as shop_name,
+            cp.id as part_id,
+            cp.name as part_name,
+            cp.mechanic_shop_id
+        FROM mechanic_shop ms
+        LEFT JOIN car_part cp ON ms.id = cp.mechanic_shop_id
+        WHERE ms.name = #{name}
+    </select>
+
+
+    <delete id="deleteShopById">
+        DELETE FROM mechanic_shop
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

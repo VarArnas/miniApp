@@ -1,4 +1,4 @@
-package com.example.miniapp.entities.JPA;
+package com.example.miniapp.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,16 +13,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "car_part")
-public class CarPart {
-
+@Table(name = "mechanic_shop")
+public class MechanicShop {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "parts")
-    private List<Car> cars = new ArrayList<>();
+    @OneToMany(mappedBy = "mechanicShop")
+    private List<CarPart> parts = new ArrayList<>();
 }
