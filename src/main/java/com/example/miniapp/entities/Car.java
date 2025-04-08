@@ -23,8 +23,7 @@ public class Car {
     @Column(name = "model", nullable = false)
     private String model;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-//    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "car_car_part",
             joinColumns = @JoinColumn(name = "car_id"),

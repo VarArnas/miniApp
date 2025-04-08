@@ -3,6 +3,7 @@ package com.example.miniapp.typeHandlers;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
+import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.UUID;
 

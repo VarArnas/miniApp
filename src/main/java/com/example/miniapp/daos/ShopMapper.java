@@ -11,7 +11,7 @@ import java.util.UUID;
 @Mapper
 public interface ShopMapper {
     void insertShop(MechanicShop shop);
-    MechanicShop findShopByNameWithParts(@Param("id") UUID id);
+    MechanicShop findShopByIdWithParts(@Param("id") UUID id);
     List<MechanicShop> findAllShops();
     void deleteShopById(@Param("id") UUID id);
 }

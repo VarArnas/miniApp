@@ -5,16 +5,16 @@
 <mapper namespace="com.example.miniapp.daos.ShopMapper">
 
     <resultMap id="carPartResultMap" type="CarPart">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
+        <id property="id" column="part_id"/>
+        <result property="name" column="part_name"/>
         <association property="mechanicShop" javaType="MechanicShop">
-            <id property="id" column="id"/>
+            <id property="id" column="part_shop_id"/>
         </association>
     </resultMap>
 
     <resultMap id="shopWithPartsResultMap" type="MechanicShop">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
+        <id property="id" column="shop_id"/>
+        <result property="name" column="shop_name"/>
 
         <collection
                 property="parts"
@@ -38,16 +38,16 @@
         FROM mechanic_shop
     </select>
 
-    <select id="findShopByNameWithParts" resultMap="shopWithPartsResultMap">
+    <select id="findShopByIdWithParts" resultMap="shopWithPartsResultMap">
         SELECT
             ms.id as shop_id,
             ms.name as shop_name,
             cp.id as part_id,
             cp.name as part_name,
-            cp.mechanic_shop_id
+            cp.mechanic_shop_id as part_shop_id
         FROM mechanic_shop ms
-        LEFT JOIN car_part cp ON ms.id = cp.mechanic_shop_id
-        WHERE ms.name = #{name}
+                 LEFT JOIN car_part cp ON ms.id = cp.mechanic_shop_id
+        WHERE ms.id = #{id}
     </select>
 
 

@@ -23,7 +23,7 @@ public class CarPart {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "parts")
+    @ManyToMany(mappedBy = "parts", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<Car> cars = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
