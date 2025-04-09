@@ -23,7 +23,12 @@ public class CarPart {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "parts", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(
+            name = "car_part_car",
+            joinColumns = @JoinColumn(name = "car_part_id"),
+            inverseJoinColumns = @JoinColumn(name = "car_id")
+    )
     private List<Car> cars = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
