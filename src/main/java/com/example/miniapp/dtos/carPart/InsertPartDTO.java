@@ -1,20 +1,14 @@
-package com.example.miniapp.dtos;
+package com.example.miniapp.dtos.carPart;
 
-import com.example.miniapp.entities.Car;
-import com.example.miniapp.entities.MechanicShop;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-public class UpdatePartDTO {
-
-    private final UUID id;
+public class InsertPartDTO {
 
     private final String name;
 

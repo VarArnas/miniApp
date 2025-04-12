@@ -23,20 +23,18 @@ public class Car {
     @Column(name = "model", nullable = false)
     private String model;
 
-    @ManyToMany(mappedBy = "cars", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(mappedBy = "cars", cascade = {CascadeType.PERSIST})
     private List<CarPart> parts = new ArrayList<>();
 
     public void addPart(CarPart part) {
         parts.add(part);
         if (!part.getCars().contains(this)) {
-            part.addCar(this);
+            part.getCars().add(this);
         }
     }
 
     public void removePart(CarPart part) {
         parts.remove(part);
-        if(part.getCars().contains(this)) {
-            part.removeCar(this);
-        }
+        part.getCars().remove(this);
     }
 }

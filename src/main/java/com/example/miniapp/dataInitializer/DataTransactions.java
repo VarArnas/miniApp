@@ -1,6 +1,7 @@
 package com.example.miniapp.dataInitializer;
 
 import com.example.miniapp.daos.ShopDAO;
+import com.example.miniapp.dtos.shop.InsertShopDTO;
 import com.example.miniapp.entities.Car;
 import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.entities.MechanicShop;
@@ -27,6 +28,7 @@ public class DataTransactions {
 
     private final ShopService shopService;
     private final CarPartService carPartService;
+
 
     @PersistenceContext
     private EntityManager em;
@@ -68,23 +70,17 @@ public class DataTransactions {
 
     @Transactional
     public void first(){
-        MechanicShop shop1 = MechanicShop.builder()
-                .name("Best mehcanics")
-                .parts(new ArrayList<CarPart>())
-                .build();
-        MechanicShop shop2 = MechanicShop.builder()
-                .name("Worst mechanics")
-                .parts(new ArrayList<CarPart>())
-                .build();
-        MechanicShop shop3 = MechanicShop.builder()
-                .name("Mid mechanics")
-                .parts(new ArrayList<CarPart>())
-                .build();
 
-        shopService.insertShop(shop1);
-        shopService.insertShop(shop2);
-        shopService.insertShop(shop3);
+        //create 3 shops
+        InsertShopDTO fakeShop1 = new InsertShopDTO("Best mechanics", new ArrayList<>());
+        InsertShopDTO fakeShop2 = new InsertShopDTO("Worst mechanics", new ArrayList<>());
+        InsertShopDTO fakeShop3 = new InsertShopDTO("Mid mechanics", new ArrayList<>());
 
+        MechanicShop shop1 = shopService.insertShop(fakeShop1);
+        MechanicShop shop2 = shopService.insertShop(fakeShop2);
+        MechanicShop shop3 = shopService.insertShop(fakeShop3);
+
+        //create 3 parts
         CarPart part1 = CarPart.builder()
                 .name("Turbocharger")
                 .cars(new ArrayList<Car>())
@@ -102,10 +98,11 @@ public class DataTransactions {
                 .mechanicShop(shop2)
                 .build();
 
-        carPartRepository.saveAll(List.of(part1, part2, part3));
+//        System.out.println("shows all");
+//        em.flush();
+//        shopDAO.deleteShopById(shop1.getId());
 
-        System.out.println("\n\nDone initializing MechanicShop and parts\n\n");
-
+        //create 3 cars
         Car car1 = Car.builder().
                 model("Toyota Supra").
                 parts(new ArrayList<CarPart>())
@@ -119,6 +116,8 @@ public class DataTransactions {
                 .parts(new ArrayList<CarPart>())
                 .build();
 
+
+        //add parts to cars
         car1.addPart(part1);
         car1.addPart(part2);
 

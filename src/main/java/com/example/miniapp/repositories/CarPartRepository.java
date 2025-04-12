@@ -1,6 +1,7 @@
 package com.example.miniapp.repositories;
 
 import com.example.miniapp.entities.CarPart;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface CarPartRepository extends JpaRepository<CarPart, UUID> {
     List<CarPart> findAllByMechanicShop_Id(UUID mechanicShopId);
+    List<CarPart> findByCars_Id(UUID carId);
 }

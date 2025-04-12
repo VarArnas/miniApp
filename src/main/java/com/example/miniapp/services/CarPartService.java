@@ -1,15 +1,16 @@
 package com.example.miniapp.services;
 
-import com.example.miniapp.dtos.InsertPartDTO;
-import com.example.miniapp.dtos.UpdatePartDTO;
-import com.example.miniapp.entities.Car;
+import com.example.miniapp.dtos.carPart.InsertPartDTO;
+import com.example.miniapp.dtos.carPart.UpdatePartDTO;
 import com.example.miniapp.entities.CarPart;
-import com.example.miniapp.mappers.carPartMappers.CarPartMapper;
+import com.example.miniapp.entities.MechanicShop;
+import com.example.miniapp.mappers.CarPartMapper;
 import com.example.miniapp.repositories.CarPartRepository;
 import com.example.miniapp.repositories.CarRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,45 +28,79 @@ public class CarPartService {
     private final CarPartMapper carPartMapper;
     private final CarRepository carRepository;
 
-
     //DML
     public void removeCarParts(List<CarPart> carParts){
         carPartRepository.deleteAll(carParts);
     }
 
     public CarPart createCarPart(InsertPartDTO partDTO) {
+
         CarPart carPart = carPartMapper.toCarPart(partDTO);
 
-        List<Car> references = new ArrayList<>();
-        partDTO.getCars().forEach(carId -> {
-            references.add(carRepository.getReferenceById(carId));
-        });
+        carPart.setCars(
+                partDTO.getCars().stream()
+                        .map(carRepository::getReferenceById)
+                        .toList()
+        );
 
-        carPart.getCars().addAll(references);
+
         return carPartRepository.save(carPart);
     }
 
     public CarPart updateCarPart(UpdatePartDTO partDTO) {
-        CarPart carPart = carPartMapper.toCarPart(partDTO);
+        CarPart carPart = carPartRepository.findById(partDTO.getId()).orElseThrow();
+        carPartMapper.toCarPart(partDTO, carPart);
 
-        List<Car> references = new ArrayList<>();
-        partDTO.getCars().forEach(carId -> {
-            references.add(carRepository.getReferenceById(carId));
+        carPart.setCars(
+                partDTO.getCars().stream()
+                        .map(carRepository::getReferenceById)
+                        .toList()
+        );
+
+        return carPart;
+    }
+
+    public List<CarPart> reassignCarParts(List<UUID> carParts, MechanicShop shop) {
+
+        List<CarPart> partsToAdd = carPartRepository.findAllById(carParts);
+
+        List<CarPart> deleteCarParts = shop.getParts().stream()
+                .filter(part -> !carParts.contains(part.getId()))
+                .toList();
+
+        if(!deleteCarParts.isEmpty()){
+            removeCarParts(deleteCarParts);
+        }
+
+        partsToAdd.forEach(part -> {
+            if(!part.getMechanicShop().getId().equals(shop.getId())){
+                part.setMechanicShop(shop);
+            }
         });
 
-        carPart.getCars().addAll(references);
-        return carPartRepository.save(carPart);
+        return partsToAdd;
     }
 
     //DQL
+    @Transactional(readOnly = true)
     public List<CarPart> getAllCarParts() {
         return carPartRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<CarPart> getPartsByShopId(UUID shopId) {
         return carPartRepository.findAllByMechanicShop_Id(shopId);
     }
 
+    @Transactional(readOnly = true)
+    public List<CarPart> getPartsByCarId(UUID carId) {
+        return carPartRepository.findByCars_Id(carId);
+    }
 
-
+    @Transactional(readOnly = true)
+    public CarPart getCarPartByIdWithCars(UUID carPartId) {
+        CarPart part = carPartRepository.findById(carPartId).orElseThrow();
+        Hibernate.initialize(part.getCars());
+        return part;
+    }
 }

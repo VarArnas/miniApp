@@ -1,8 +1,11 @@
 package com.example.miniapp.services;
 
 import com.example.miniapp.daos.ShopDAO;
+import com.example.miniapp.dtos.shop.InsertShopDTO;
+import com.example.miniapp.dtos.shop.UpdateShopDTO;
 import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.entities.MechanicShop;
+import com.example.miniapp.mappers.ShopMapper;
 import com.example.miniapp.repositories.CarPartRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -23,27 +26,31 @@ import java.util.UUID;
 public class ShopService {
     private final ShopDAO shopDAO;
     private final CarPartService carPartService;
-    private final CarPartRepository carPartRepository;
-
-    @PersistenceContext
-    private EntityManager em;
+    private final ShopMapper shopMapper;
 
     //DML
-    public MechanicShop insertShop(MechanicShop shop) {
-        shop.setId(UUID.randomUUID());
+    public MechanicShop insertShop(InsertShopDTO shopDTO) {
+        MechanicShop shop = shopMapper.toMechanicShop(shopDTO);
         shopDAO.insertShop(shop);
-        return shopDAO.getShopById(shop.getId());
+
+        if(shopDTO.getParts() != null) {
+            carPartService.reassignCarParts(shopDTO.getParts(), shop);
+        }
+
+        return shopDAO.findShopByIdWithParts(shop.getId());
     }
 
-    public MechanicShop updateShop(MechanicShop shop) {
+    public MechanicShop updateShop(UpdateShopDTO shopDTO) {
+        MechanicShop shop = shopDAO.findShopByIdWithParts(shopDTO.getId());
+        shopMapper.toMechanicShop(shopDTO, shop);
+        carPartService.reassignCarParts(shopDTO.getParts(), shop);
         shopDAO.updateShop(shop);
-        return shopDAO.getShopById(shop.getId());
+
+
+        return shopDAO.findShopByIdWithParts(shop.getId());
     }
 
     public void deleteShop(UUID id) {
-        List<CarPart> carParts = carPartService.getPartsByShopId(id);
-        carPartService.removeCarParts(carParts);
-        em.flush();
         shopDAO.deleteShopById(id);
     }
 
