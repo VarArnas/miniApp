@@ -3,11 +3,8 @@ package com.example.miniapp.services;
 
 import com.example.miniapp.dtos.car.InsertCarDTO;
 import com.example.miniapp.dtos.car.UpdateCarDTO;
-import com.example.miniapp.dtos.carPart.InsertPartDTO;
-import com.example.miniapp.dtos.carPart.UpdatePartDTO;
 import com.example.miniapp.entities.Car;
 import com.example.miniapp.entities.CarPart;
-import com.example.miniapp.entities.MechanicShop;
 import com.example.miniapp.mappers.CarMapper;
 import com.example.miniapp.repositories.CarPartRepository;
 import com.example.miniapp.repositories.CarRepository;
@@ -18,10 +15,8 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter

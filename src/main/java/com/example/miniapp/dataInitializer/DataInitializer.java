@@ -1,6 +1,5 @@
 package com.example.miniapp.dataInitializer;
 
-import com.example.miniapp.daos.ShopDAO;
 import com.example.miniapp.dtos.car.InsertCarDTO;
 import com.example.miniapp.dtos.car.UpdateCarDTO;
 import com.example.miniapp.dtos.carPart.InsertPartDTO;

@@ -1,10 +1,7 @@
 package com.example.miniapp.mappers;
 
-import com.example.miniapp.dtos.carPart.InsertPartDTO;
-import com.example.miniapp.dtos.carPart.UpdatePartDTO;
 import com.example.miniapp.dtos.shop.InsertShopDTO;
 import com.example.miniapp.dtos.shop.UpdateShopDTO;
-import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.entities.MechanicShop;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
