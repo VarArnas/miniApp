@@ -80,6 +80,10 @@ public class CarPartService {
         return partsToAdd;
     }
 
+    public void deleteCarPart(UUID id) {
+        carPartRepository.deleteById(id);
+    }
+
     //DQL
     @Transactional(readOnly = true)
     public List<CarPart> getAllCarParts() {

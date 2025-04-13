@@ -1,12 +1,17 @@
 package com.example.miniapp.mappers;
 
 import com.example.miniapp.dtos.car.InsertCarDTO;
+import com.example.miniapp.dtos.car.ReturnCarDTO;
 import com.example.miniapp.dtos.car.UpdateCarDTO;
+import com.example.miniapp.dtos.carPart.ReturnPartDTO;
 import com.example.miniapp.entities.Car;
+import com.example.miniapp.entities.CarPart;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 @AllArgsConstructor
@@ -21,5 +26,9 @@ public class CarMapper {
 
     public void toCar(UpdateCarDTO carDTO, Car car) {
         car.setModel(carDTO.getModel());
+    }
+
+    public ReturnCarDTO toReturnCarDTO(Car car) {
+        return new ReturnCarDTO(car.getId(), car.getModel(), new ArrayList<>());
     }
 }

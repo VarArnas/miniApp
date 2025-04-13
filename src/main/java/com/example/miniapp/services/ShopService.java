@@ -9,6 +9,7 @@ import com.example.miniapp.mappers.ShopMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @Service
+@Scope("application")
 @Transactional
 public class ShopService {
     private final ShopDAO shopDAO;

@@ -8,9 +8,11 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-public class InsertShopDTO {
+public class ReturnShopDTO {
+    private final UUID id;
 
-    private String name;
+    private final String name;
 
-    private List<UUID> parts;
+    private final List<UUID> parts;
+
 }

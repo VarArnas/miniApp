@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f = "http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Mechanic Shops</title>
+    <style>
+        #entities {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            flex-wrap: nowrap;
+
+        }
+
+        .nameWithCreate{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            flex-wrap: nowrap;
+            border: 2px solid black;
+            gap: 20px;
+        }
+
+        .nameWithCreate h2{
+            color: white;
+            border: 1px solid green;
+        }
+
+        .createButton{
+            background: green;
+            color: white;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+
+        .deleteButton{
+            background: red;
+            color: white;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+
+        .updateButton{
+            background: orange;
+            color: white;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+
+        form{
+            border: 2px solid yellow;
+            align-content: center;
+        }
+
+        body{
+            background: #686a66;
+        }
+
+        .flex-item{
+            width: 100%;
+        }
+
+        .fieldNames{
+            color: white;
+        }
+
+        .fieldNames > strong{
+            color: black;
+        }
+
+    </style>
+</h:head>
+<h:body>
+
+    <div id="entities">
+        <div class="flex-item">
+            <div class="nameWithCreate">
+                <h2>Mechanics</h2>
+                <h:form>
+                    <h:commandButton styleClass="createButton" value="Create New" action="#{shopBackingBean.goToWorkWithMechanic}">
+                        <f:setPropertyActionListener target = "#{shopBackingBean.selectedShop}" value = "#{null}" />
+                    </h:commandButton>
+                </h:form>
+            </div>
+            <h:form id="shopsForm">
+                    <h:dataTable value="#{shopBackingBean.getAllMechanicShops()}" var="shop">
+                        <h:column class="fieldNames">
+                            <strong>Name:</strong> #{shop.name}
+                        </h:column>
+                        <h:column class="fieldNames">
+                            <h:commandButton styleClass="deleteButton" value="Delete" action="#{shopBackingBean.deleteMechanicShop(shop.id)}">
+                                <f:ajax execute="@this" render=":shopsForm :partsForm" />
+                            </h:commandButton>
+                        </h:column>
+                        <h:column class="fieldNames">
+                            <h:commandButton styleClass="updateButton" value="Modify" action="#{shopBackingBean.goToWorkWithMechanic}">
+                                <f:setPropertyActionListener target = "#{shopBackingBean.selectedShop}" value = "#{shop}" />
+                            </h:commandButton>
+                        </h:column>
+                    </h:dataTable>
+            </h:form>
+        </div>
+
+        <div class="flex-item">
+            <div class="nameWithCreate">
+                <h2>Car parts</h2>
+                <h:form>
+                    <h:commandButton styleClass="createButton" value="Create New" action="#{carPartBackingBean.goToWorkWithPart}">
+                        <f:setPropertyActionListener target = "#{carPartBackingBean.selectedPart}" value = "#{null}" />
+                    </h:commandButton>
+                </h:form>
+            </div>
+            <h:form id="partsForm">
+                    <h:dataTable value="#{carPartBackingBean.getAllParts()}" var="part" varStatus="loop">
+                        <h:column class="fieldNames">
+                            <strong>Name:</strong> #{part.name}
+                        </h:column>
+                        <h:column>
+                            <h:commandButton styleClass="deleteButton" value="Delete" action="#{carPartBackingBean.deletePart(part.id)}">
+                                <f:ajax execute="@this" render=":partsForm" />
+                            </h:commandButton>
+                        </h:column>
+                        <h:column>
+                            <h:commandButton styleClass="updateButton" value="Modify" action="#{carPartBackingBean.goToWorkWithPart}">
+                                <f:setPropertyActionListener target = "#{carPartBackingBean.selectedPart}" value = "#{part}" />
+                            </h:commandButton>
+                        </h:column>
+                    </h:dataTable>
+            </h:form>
+        </div>
+
+        <div class="flex-item">
+            <div class="nameWithCreate">
+                <h2>Cars</h2>
+                <h:form>
+                    <h:commandButton styleClass="createButton" value="Create New" action="#{carBackingBean.goToWorkWithCar}">
+                        <f:setPropertyActionListener target = "#{carBackingBean.selectedCar}" value = "#{null}" />
+                    </h:commandButton>
+                </h:form>
+            </div>
+            <h:form id="carsForm">
+                <h:dataTable value="#{carBackingBean.getAllCars()}" var="car">
+                    <h:column class="fieldNames">
+                        <strong>Model:</strong> #{car.model}
+                    </h:column>
+                    <h:column>
+                        <h:commandButton styleClass="deleteButton" value="Delete" action="#{carBackingBean.deleteCar(car.id)}">
+                            <f:ajax execute="@this" render=":carsForm" />
+                        </h:commandButton>
+                    </h:column>
+                    <h:column>
+                        <h:commandButton styleClass="updateButton" value="Modify" action="#{carBackingBean.goToWorkWithCar}">
+                            <f:setPropertyActionListener target = "#{carBackingBean.selectedCar}" value = "#{car}" />
+                        </h:commandButton>
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

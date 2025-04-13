@@ -68,6 +68,10 @@ public class CarService {
         return car;
     }
 
+    public void deleteCar(UUID id) {
+        carRepository.deleteById(id);
+    }
+
     //DQL
     @Transactional(readOnly = true)
     public List<Car> getAllCars() {

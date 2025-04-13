@@ -9,9 +9,9 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 public class UpdateShopDTO {
-    private final UUID id;
+    private UUID id;
 
-    private final String name;
+    private String name;
 
-    private final List<UUID> parts;
+    private List<UUID> parts;
 }
