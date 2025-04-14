@@ -2,19 +2,23 @@ package com.example.miniapp.dtos.carPart;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class UpdatePartDTO {
 
-    private final UUID id;
+    private  UUID id;
 
-    private final String name;
+    private  String name;
 
-    private final List<UUID> cars;
+    private  List<UUID> cars;
 
-    private final UUID mechanicShop;
+    private  UUID mechanicShop;
 }

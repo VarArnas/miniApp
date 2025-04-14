@@ -1,12 +1,8 @@
 package com.example.miniapp.backingBeans;
 
 import com.example.miniapp.dtos.carPart.InsertPartDTO;
-import com.example.miniapp.dtos.carPart.ReturnPartDTO;
 import com.example.miniapp.dtos.carPart.UpdatePartDTO;
-import com.example.miniapp.dtos.shop.InsertShopDTO;
-import com.example.miniapp.dtos.shop.ReturnShopDTO;
 import com.example.miniapp.entities.CarPart;
-import com.example.miniapp.entities.MechanicShop;
 import com.example.miniapp.mappers.CarPartMapper;
 import com.example.miniapp.services.CarPartService;
 import jakarta.annotation.PostConstruct;
@@ -19,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @Scope("session")
@@ -31,10 +26,9 @@ public class CarPartBackingBean {
     private final CarPartService carPartService;
     private final CarPartMapper carPartMapper;
 
-    public List<ReturnPartDTO> cachedPartDTOS;
-    public ReturnPartDTO selectedPart;
+    public List<UpdatePartDTO> cachedPartDTOS;
     public UpdatePartDTO updatePartDTO;
-    public InsertPartDTO insertPartDTO;
+    public InsertPartDTO insertPartDTO = new InsertPartDTO("", new ArrayList<>(), null);
 
 
     @PostConstruct
@@ -42,14 +36,14 @@ public class CarPartBackingBean {
         refreshParts();
     }
 
-    public List<ReturnPartDTO> getAllParts(){
+    public List<UpdatePartDTO> getAllParts(){
         return cachedPartDTOS;
     }
 
     public void refreshParts(){
         List<CarPart> parts = carPartService.getAllCarParts();
         cachedPartDTOS = parts.stream()
-                .map(carPartMapper::toReturnPartDTO)
+                .map(carPartMapper::toReturnPartDTONoCars)
                 .toList();
     }
 
@@ -62,17 +56,31 @@ public class CarPartBackingBean {
         return "workWithPart?faces-redirect=true";
     }
 
+    public String goToWorkWithPart(UUID partID){
+        CarPart part = carPartService.getCarPartByIdWithCars(partID);
+        updatePartDTO = carPartMapper.toReturnPartDTO(part);
+        return "workWithPart?faces-redirect=true";
+    }
+
     public String goToHomePage(){
         return "index?faces-redirect=true";
     }
 
-//    public ReturnShopDTO updateShopById(){
-//        MechanicShop updatedShop = shopService.updateShop(updateShopDTO);
-//        return shopMapper.toReturnShopDTO(updatedShop);
-//    }
-//
-//    public ReturnShopDTO createNewShop(){
-//        MechanicShop createdShop = shopService.insertShop(insertShopDTO);
-//        return shopMapper.toReturnShopDTO(createdShop);
-//    }
+    public String updatePart(){
+        carPartService.updateCarPart(updatePartDTO);
+        refreshParts();
+        return "index?faces-redirect=true";
+    }
+
+    public String insertPart(){
+        carPartService.createCarPart(insertPartDTO);
+        refreshParts();
+
+        insertPartDTO.setCars(new ArrayList<>());
+        insertPartDTO.setName("");
+        insertPartDTO.setMechanicShop(null);
+        return "index?faces-redirect=true";
+    }
+
+
 }

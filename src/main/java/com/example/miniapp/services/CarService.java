@@ -48,7 +48,7 @@ public class CarService {
         carMapper.toCar(carDTO, car);
 
         List<CarPart> deleteCarParts = car.getParts().stream()
-                        .filter(part -> carDTO.getParts().contains(part.getId()))
+                        .filter(part -> !carDTO.getParts().contains(part.getId()))
                         .toList();
 
         for (CarPart carPart : deleteCarParts) {

@@ -1,24 +1,20 @@
 package com.example.miniapp.backingBeans;
 
 import com.example.miniapp.dtos.shop.InsertShopDTO;
-import com.example.miniapp.dtos.shop.ReturnShopDTO;
 import com.example.miniapp.dtos.shop.UpdateShopDTO;
 import com.example.miniapp.entities.MechanicShop;
 import com.example.miniapp.mappers.ShopMapper;
+import com.example.miniapp.services.CarPartService;
 import com.example.miniapp.services.ShopService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,11 +27,11 @@ public class ShopBackingBean {
 
     private final ShopService shopService;
     private final ShopMapper shopMapper;
+    private final CarPartService carPartService;
 
-    public List<ReturnShopDTO> cachedShopDTOS;
-    public ReturnShopDTO selectedShop;
+    public List<UpdateShopDTO> cachedShopDTOS;
     public UpdateShopDTO updateShopDTO;
-    public InsertShopDTO insertShopDTO;
+    public InsertShopDTO insertShopDTO = new InsertShopDTO("", new ArrayList<>());
 
 
     @PostConstruct
@@ -43,25 +39,28 @@ public class ShopBackingBean {
         refreshShops();
     }
 
-    public List<ReturnShopDTO> getAllMechanicShops(){
+    public List<UpdateShopDTO> getAllMechanicShops(){
         return cachedShopDTOS;
     }
 
     public void refreshShops(){
         List<MechanicShop> parts = shopService.getAllShops();
         cachedShopDTOS = parts.stream()
-                .map(shopMapper::toReturnShopDTO)
+                .map(shopMapper::toUpdateShopDTONoParts)
                 .toList();
     }
 
     public void deleteMechanicShop(UUID shopId){
         shopService.deleteShop(shopId);
         refreshShops();
+        refreshCarParts();
+    }
 
-        FacesContext context = FacesContext.getCurrentInstance();
-        CarPartBackingBean carPartBean = context.getApplication()
-                .evaluateExpressionGet(context, "#{carPartBackingBean}", CarPartBackingBean.class);
-        carPartBean.refreshParts();
+    public String goToWorkWithMechanic(UUID shopId){
+        MechanicShop shop = shopService.getShopWithParts(shopId);
+        updateShopDTO = shopMapper.toUpdateShopDTO(shop);
+        System.out.println(updateShopDTO.getName() + " and its part size: " + updateShopDTO.getParts().size());
+        return "workWithMechanic?faces-redirect=true";
     }
 
     public String goToWorkWithMechanic(){
@@ -72,13 +71,26 @@ public class ShopBackingBean {
         return "index?faces-redirect=true";
     }
 
-    public ReturnShopDTO updateShopById(){
-        MechanicShop updatedShop = shopService.updateShop(updateShopDTO);
-        return shopMapper.toReturnShopDTO(updatedShop);
+    public String updateShop(){
+        shopService.updateShop(updateShopDTO);
+        refreshShops();
+        refreshCarParts();
+        return "index?faces-redirect=true";
     }
 
-    public ReturnShopDTO createNewShop(){
-        MechanicShop createdShop = shopService.insertShop(insertShopDTO);
-        return shopMapper.toReturnShopDTO(createdShop);
+    public String insertShop(){
+        shopService.insertShop(insertShopDTO);
+        refreshShops();
+
+        insertShopDTO.setName("");
+        insertShopDTO.setParts(new ArrayList<>());
+        return "index?faces-redirect=true";
+    }
+
+    public void refreshCarParts(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        CarPartBackingBean carPartBean = context.getApplication()
+                .evaluateExpressionGet(context, "#{carPartBackingBean}", CarPartBackingBean.class);
+        carPartBean.refreshParts();
     }
 }

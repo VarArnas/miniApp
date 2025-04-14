@@ -1,0 +1,130 @@
+#entities {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: nowrap;
+    margin-top: 120px;
+
+}
+
+.nameWithCreate{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 30px;
+}
+
+.nameWithCreate h2{
+    color: white;
+}
+
+.createButton{
+    background: green;
+    color: white;
+    border: 2px solid green;
+    border-radius: 10px;
+    height: 35px;
+    cursor:pointer;
+
+}
+
+.createButton:hover, .deleteButton:hover, .updateButton:hover{
+    opacity: 0.5;
+}
+
+.createButton:active, .deleteButton:active, .updateButton:active{
+    border: 2px solid black;
+}
+
+
+
+.deleteButton{
+    background: red;
+    color: white;
+    border: 2px solid red;
+    border-radius: 10px;
+    height: 25px;
+    cursor:pointer;
+
+}
+
+.updateButton{
+    background: orange;
+    color: white;
+    border: 2px solid orange;
+    border-radius: 10px;
+    height: 25px;
+    cursor:pointer;
+
+}
+
+form{
+    /*border: 2px solid yellow;*/
+    align-content: center;
+}
+
+body{
+    background: rgba(67, 69, 62, 0.63);
+}
+
+.flex-item{
+    width: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.fieldNames{
+    color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.fieldNames > strong{
+    color: black;
+}
+
+.buttons{
+
+}
+
+.table{
+    border-spacing: 0 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.table tr{
+    background: #9e9a9a;
+}
+
+.table tr td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    padding-left: 10px;
+}
+
+.table tr td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding-left: 15px;
+    padding-right: 10px;
+}
+
+.table td:nth-child(1) {
+    text-align: left;
+    width: 90%;
+}
+
+.table td:nth-child(2),
+.table td:nth-child(3) {
+    text-align: right;
+}
+
+#title{
+    display: flex;
+    justify-content: center;
+    letter-spacing: 2px;
+    color: rgba(95, 201, 216, 0.73);
+    font-size: 2rem;
+}

@@ -10,21 +10,238 @@
         span{
             color: green;
         }
+
+        .headerOfWork{
+            margin-top: 50px;
+            margin-left: 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .creationForm{
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 40px;
+            margin-top: 100px;
+            flex-wrap: wrap;
+        }
+
+        .creationItem{
+            width: 45%;
+            margin-left: 10px;
+            color: rgba(255, 255, 255, 0.72);
+            background: rebeccapurple;
+            border-radius: 20px;
+
+        }
+
+        .creationItem > *{
+            margin-left: 20px;
+        }
+
+        .creationItem > h3{
+            font-size: 1.5rem;
+        }
+
+        #goBackForm{
+            float: right;
+            margin-right: 100px;
+            width: 150px;
+            height: 50px;
+            margin-top: 200px;
+        }
+
+        #goBackForm > *{
+            height: 100%;
+            width: 100%;
+            font-size: 1.5rem;
+            border-radius: 20px;
+        }
+
+
+        .panelTable{
+            margin-left: 50px;
+            border-spacing: 0 20px;
+
+        }
+
+        .panelTable td{
+            padding-left: 10px;
+            padding-right: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .panelTable td input, .panelTable td select{
+            border-radius: 20px;
+            border: 2px solid rebeccapurple;
+            width: 300px;
+        }
+
+        .checkBoxes{
+            border-spacing: 0 10px;
+            width: 100%;
+        }
+
+        .checkBoxes td{
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid rebeccapurple;
+            border-bottom: 1px solid white;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .scrollCheck{
+            overflow-y: auto;
+            margin-left: 50px;
+            border-radius: 10px;
+            max-height: 150px;
+            margin-right: 150px;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .creationButton{
+            margin-top: 50px;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .creationButton * {
+            height: 50px !important;
+            width: 150px !important;
+            font-size: 1.2rem !important;
+            border-radius: 20px !important;
+        }
+
+        .scrollable-dropdown {
+            max-height: 20px;
+            overflow-y: auto;
+            width: 200px;
+        }
+
     </style>
+    <link rel="stylesheet" href="./templates/stylesMiniApp.css"/>
 </h:head>
 <body>
-<h:panelGroup rendered="#{carPartBackingBean.selectedPart == null}">
-    <h2>CREATE CAR PART</h2>>
-</h:panelGroup>
-<h:panelGroup rendered="#{carPartBackingBean.selectedPart != null}">
-    <h2>Part: <span> #{carPartBackingBean.selectedPart.name} </span> </h2> <br/>
-</h:panelGroup>
+    <h:panelGroup rendered="#{carPartBackingBean.updatePartDTO != null}">
+        <div class="headerOfWork">
+            <h2>Modify part: <span>#{carPartBackingBean.updatePartDTO.name}</span> </h2>
+        </div>
 
-<h:form>
-    <h:commandButton value="Go Back" action="#{carPartBackingBean.goToHomePage}">
-        <f:setPropertyActionListener target="#{carPartBackingBean.selectedPart}" value="#{null}"/>
-    </h:commandButton>
-</h:form>
+        <h:form styleClass="creationForm">
+            <div class="creationItem">
+                <h3>Change data</h3>
+
+                <h:panelGrid columns="3" styleClass="panelTable">
+                    <h:outputLabel>Name: </h:outputLabel>
+                    <h:inputText id="model" required="true" value="#{carPartBackingBean.updatePartDTO.name}" />
+                    <h:message  for="model" style="color: red;"/>
+                    <h:outputLabel>Mechanic shop: </h:outputLabel>
+                    <h:selectOneMenu id="MechanicShop" converter="uuidConverter"
+                            value="#{carPartBackingBean.updatePartDTO.mechanicShop}"
+                            styleClass="scrollable-dropdown"
+                            required="true">
+                        <f:selectItem itemLabel="-- Select Shop --" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems
+                                value="#{shopBackingBean.getAllMechanicShops()}"
+                                var="shop"
+                                itemLabel="#{shop.name}"
+                                itemValue="#{shop.id}"
+                        />
+                    </h:selectOneMenu>
+                    <h:message for="MechanicShop" style="color: red;" />
+                </h:panelGrid>
+
+            </div>
+            <div class="creationItem">
+                <h3>Cars to assign/remove</h3>
+
+                <div class="scrollCheck">
+                    <h:selectManyCheckbox styleClass="checkBoxes"
+                                          value="#{carPartBackingBean.updatePartDTO.cars}"
+                                          layout="pageDirection">
+                        <f:selectItems value="#{carBackingBean.getAllCars()}"
+                                       var="car"
+                                       itemLabel="#{car.model}"
+                                       itemValue="#{car.id}"/>
+                    </h:selectManyCheckbox>
+                </div>
+
+            </div>
+
+            <div class="creationButton">
+                <h:commandButton styleClass="createButton"
+                                 value="Update Car"
+                                 action="#{carPartBackingBean.updatePart()}"
+                                 style="background: orange; border: 2px solid orange">
+                </h:commandButton>
+            </div>
+        </h:form>
+    </h:panelGroup>
+
+    <h:panelGroup rendered="#{carPartBackingBean.updatePartDTO == null}">
+        <div class="headerOfWork">
+            <h2>Part creation</h2>
+        </div>
+
+        <h:form styleClass="creationForm">
+            <div class="creationItem">
+                <h3>Input data</h3>
+
+                <h:panelGrid columns="3" styleClass="panelTable">
+                    <h:outputLabel>Name: </h:outputLabel>
+                    <h:inputText id="model" required="true" value="#{carPartBackingBean.insertPartDTO.name}" />
+                    <h:message  for="model" style="color: red;"/>
+                    <h:outputLabel>Mechanic shop: </h:outputLabel>
+                    <h:selectOneMenu id="MechanicShop" converter="uuidConverter"
+                                     value="#{carPartBackingBean.insertPartDTO.mechanicShop}"
+                                     styleClass="scrollable-dropdown"
+                                     required="true">
+                        <f:selectItem itemLabel="-- Select Shop --" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems
+                                value="#{shopBackingBean.getAllMechanicShops()}"
+                                var="shop"
+                                itemLabel="#{shop.name}"
+                                itemValue="#{shop.id}"
+                        />
+                    </h:selectOneMenu>
+                    <h:message for="MechanicShop" style="color: red;" />
+                </h:panelGrid>
+
+            </div>
+            <div class="creationItem">
+                <h3>Parts to assign</h3>
+
+                <div class="scrollCheck">
+                    <h:selectManyCheckbox styleClass="checkBoxes"
+                                          value="#{carPartBackingBean.insertPartDTO.cars}"
+                                          layout="pageDirection">
+                        <f:selectItems value="#{carBackingBean.getAllCars()}"
+                                       var="car"
+                                       itemLabel="#{car.model}"
+                                       itemValue="#{car.id}"/>
+                    </h:selectManyCheckbox>
+                </div>
+
+            </div>
+
+            <div class="creationButton">
+                <h:commandButton styleClass="createButton"
+                                 value="Create Part"
+                                 action="#{carPartBackingBean.insertPart()}">
+                </h:commandButton>
+            </div>
+        </h:form>
+    </h:panelGroup>
+
+    <h:form id="goBackForm">
+        <h:commandButton styleClass="deleteButton" value="Go Back" action="#{carPartBackingBean.goToHomePage()}">
+            <f:setPropertyActionListener target="#{carPartBackingBean.updatePartDTO}" value="#{null}"/>
+        </h:commandButton>
+    </h:form>
 
 
 </body>

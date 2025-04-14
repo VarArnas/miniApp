@@ -59,7 +59,7 @@ public class CarPartService {
         return carPart;
     }
 
-    public List<CarPart> reassignCarParts(List<UUID> carParts, MechanicShop shop) {
+    public List<CarPart> reassignCarPartsToMechanic(List<UUID> carParts, MechanicShop shop) {
 
         List<CarPart> partsToAdd = carPartRepository.findAllById(carParts);
 

@@ -1,17 +1,15 @@
 package com.example.miniapp.backingBeans;
 
 import com.example.miniapp.dtos.car.InsertCarDTO;
-import com.example.miniapp.dtos.car.ReturnCarDTO;
 import com.example.miniapp.dtos.car.UpdateCarDTO;
-import com.example.miniapp.dtos.carPart.ReturnPartDTO;
 import com.example.miniapp.entities.Car;
-import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.mappers.CarMapper;
 import com.example.miniapp.services.CarService;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.sql.Update;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +27,9 @@ public class CarBackingBean {
     private final CarService carService;
     private final CarMapper carMapper;
 
-    public List<ReturnCarDTO> cachedCarDTOS;
-    public ReturnCarDTO selectedCar;
+    public List<UpdateCarDTO> cachedCarDTOS;
     public UpdateCarDTO updateCarDTO;
-    public InsertCarDTO insertCarDTO;
+    public InsertCarDTO insertCarDTO = new InsertCarDTO("", new ArrayList<>());
 
 
     @PostConstruct
@@ -40,14 +37,14 @@ public class CarBackingBean {
         refreshCars();
     }
 
-    public List<ReturnCarDTO> getAllCars(){
+    public List<UpdateCarDTO> getAllCars(){
         return cachedCarDTOS;
     }
 
     public void refreshCars(){
         List<Car> cars = carService.getAllCars();
         cachedCarDTOS = cars.stream()
-                .map(carMapper::toReturnCarDTO)
+                .map(carMapper::toUpdateCarDTONoParts)
                 .toList();
     }
 
@@ -60,17 +57,28 @@ public class CarBackingBean {
         return "workWithCar?faces-redirect=true";
     }
 
+    public String goToWorkWithCar(UUID carId){
+        Car car = carService.getCarByIdWithParts(carId);
+        updateCarDTO = carMapper.toUpdateCarDTO(car);
+        return "workWithCar?faces-redirect=true";
+    }
+
     public String goToHomePage(){
         return "index?faces-redirect=true";
     }
 
-//    public ReturnShopDTO updateShopById(){
-//        MechanicShop updatedShop = shopService.updateShop(updateShopDTO);
-//        return shopMapper.toReturnShopDTO(updatedShop);
-//    }
-//
-//    public ReturnShopDTO createNewShop(){
-//        MechanicShop createdShop = shopService.insertShop(insertShopDTO);
-//        return shopMapper.toReturnShopDTO(createdShop);
-//    }
+    public String createNewCar(){
+        carService.createCar(insertCarDTO);
+        refreshCars();
+        insertCarDTO.setModel("");
+        insertCarDTO.setParts(new ArrayList<>());
+        return goToHomePage();
+    }
+
+    public String updateCar(){
+        carService.updateCar(updateCarDTO);
+        refreshCars();
+        return goToHomePage();
+    }
+
 }

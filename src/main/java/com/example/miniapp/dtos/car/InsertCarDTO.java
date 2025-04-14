@@ -2,17 +2,21 @@ package com.example.miniapp.dtos.car;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class InsertCarDTO {
 
-    private final String model;
+    private String model;
 
-    private final List<UUID> parts;
+    private List<UUID> parts;
 
 }
 

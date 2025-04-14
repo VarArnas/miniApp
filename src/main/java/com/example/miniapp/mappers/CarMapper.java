@@ -1,9 +1,7 @@
 package com.example.miniapp.mappers;
 
 import com.example.miniapp.dtos.car.InsertCarDTO;
-import com.example.miniapp.dtos.car.ReturnCarDTO;
 import com.example.miniapp.dtos.car.UpdateCarDTO;
-import com.example.miniapp.dtos.carPart.ReturnPartDTO;
 import com.example.miniapp.entities.Car;
 import com.example.miniapp.entities.CarPart;
 import lombok.AllArgsConstructor;
@@ -28,7 +26,14 @@ public class CarMapper {
         car.setModel(carDTO.getModel());
     }
 
-    public ReturnCarDTO toReturnCarDTO(Car car) {
-        return new ReturnCarDTO(car.getId(), car.getModel(), new ArrayList<>());
+    public UpdateCarDTO toUpdateCarDTO(Car car) {
+        List<UUID> uuids = car.getParts().stream()
+                .map(CarPart::getId)
+                .toList();
+        return new UpdateCarDTO(car.getId(), car.getModel(), uuids);
+    }
+
+    public UpdateCarDTO toUpdateCarDTONoParts(Car car) {
+        return new UpdateCarDTO(car.getId(), car.getModel(), new ArrayList<>());
     }
 }

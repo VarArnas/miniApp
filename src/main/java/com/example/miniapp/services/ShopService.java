@@ -33,7 +33,7 @@ public class ShopService {
         shopDAO.insertShop(shop);
 
         if(shopDTO.getParts() != null) {
-            carPartService.reassignCarParts(shopDTO.getParts(), shop);
+            carPartService.reassignCarPartsToMechanic(shopDTO.getParts(), shop);
         }
 
         return shopDAO.findShopByIdWithParts(shop.getId());
@@ -42,10 +42,8 @@ public class ShopService {
     public MechanicShop updateShop(UpdateShopDTO shopDTO) {
         MechanicShop shop = shopDAO.findShopByIdWithParts(shopDTO.getId());
         shopMapper.toMechanicShop(shopDTO, shop);
-        carPartService.reassignCarParts(shopDTO.getParts(), shop);
+        carPartService.reassignCarPartsToMechanic(shopDTO.getParts(), shop);
         shopDAO.updateShop(shop);
-
-
         return shopDAO.findShopByIdWithParts(shop.getId());
     }
 

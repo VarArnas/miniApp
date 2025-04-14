@@ -1,7 +1,6 @@
 package com.example.miniapp.mappers;
 
 import com.example.miniapp.dtos.shop.InsertShopDTO;
-import com.example.miniapp.dtos.shop.ReturnShopDTO;
 import com.example.miniapp.dtos.shop.UpdateShopDTO;
 import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.entities.MechanicShop;
@@ -29,7 +28,14 @@ public class ShopMapper {
 
     }
 
-    public ReturnShopDTO toReturnShopDTO(MechanicShop shop) {
-        return new ReturnShopDTO(shop.getId(), shop.getName(), new ArrayList<>());
+    public UpdateShopDTO toUpdateShopDTO(MechanicShop shop) {
+        List<UUID> parts = shop.getParts().stream()
+                .map(CarPart::getId)
+                .toList();
+        return new UpdateShopDTO(shop.getId(), shop.getName(), parts);
+    }
+
+    public UpdateShopDTO toUpdateShopDTONoParts(MechanicShop shop) {
+        return new UpdateShopDTO(shop.getId(), shop.getName(), new ArrayList<>());
     }
 }
