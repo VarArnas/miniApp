@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mechanic Shops</title>
+    <link rel="stylesheet" href="./templates/stylesMiniApp.css"/>
+</head>
+<body>
+    <div id="title">
+        <h1>miniApp</h1>
+    </div>
+
+    <div id="entities">
+        <div class="flex-item">
+            <div class="nameWithCreate">
+                <h2>Mechanics</h2>
+                <button class="createButton" onclick="goToWorkWithMechanic()">Create New</button>
+            </div>
+            <div id="shopsTable" class="table">
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div class="nameWithCreate">
+                <h2>Car parts</h2>
+                <button class="createButton" onclick="goToWorkWithPart()">Create New</button>
+            </div>
+            <div id="partsTable" class="table">
+            </div>
+        </div>
+
+        <div class="flex-item">
+            <div class="nameWithCreate">
+                <h2>Cars</h2>
+                <button class="createButton" onclick="goToWorkWithCar()">Create New</button>
+            </div>
+            <div id="carsTable" class="table">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMechanicShops();
+            loadCarParts();
+            loadCars();
+        });
+
+        // Mechanic Shops functions
+        async function loadMechanicShops() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/shops`);
+                const shops = await response.json();
+                renderShops(shops);
+            } catch (error) {
+                console.error('Error loading mechanic shops:', error);
+            }
+        }
+
+        function renderShops(shops) {
+            const table = document.getElementById('shopsTable');
+            table.innerHTML = `
+                    ${shops.map(shop => `
+                        <div class="table-row">
+                            <div class="fieldNames"><strong>Name:</strong> ${shop.name}</div>
+                            <div class="fieldNames">
+                                <button class="deleteButton" onclick="deleteMechanicShop('${shop.id}')">Delete</button>
+                                <button class="updateButton" onclick="goToWorkWithMechanic('${shop.id}')">Modify</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+        }
+
+        async function deleteMechanicShop(shopId) {
+            try {
+                await fetch(`${API_BASE_URL}/shops/${shopId}`, {
+                    method: 'DELETE'
+                });
+                loadMechanicShops();
+                loadCarParts();
+            } catch (error) {
+                console.error('Error deleting mechanic shop:', error);
+            }
+        }
+
+        function goToWorkWithMechanic(shopId) {
+            if (shopId) {
+                window.location.href = `workWithMechanic.html?id=${shopId}`;
+            } else {
+                window.location.href = 'workWithMechanic.html';
+            }
+        }
+
+        // Car Parts functions
+        async function loadCarParts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/parts`);
+                const parts = await response.json();
+                renderParts(parts);
+            } catch (error) {
+                console.error('Error loading car parts:', error);
+            }
+        }
+
+        function renderParts(parts) {
+            const table = document.getElementById('partsTable');
+            table.innerHTML = `
+                    ${parts.map(part => `
+                        <div class="table-row">
+                            <div class="fieldNames"><strong>Name:</strong> ${part.name}</div>
+                            <div class="fieldNames">
+                                <button class="deleteButton" onclick="deletePart('${part.id}')">Delete</button>
+                                <button class="updateButton" onclick="goToWorkWithPart('${part.id}')">Modify</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+        }
+
+        async function deletePart(partId) {
+            try {
+                await fetch(`${API_BASE_URL}/parts/${partId}`, {
+                    method: 'DELETE'
+                });
+                loadCarParts();
+            } catch (error) {
+                console.error('Error deleting car part:', error);
+            }
+        }
+
+        function goToWorkWithPart(partId) {
+            if (partId) {
+                window.location.href = `workWithPart.html?id=${partId}`;
+            } else {
+                window.location.href = 'workWithPart.html';
+            }
+        }
+
+        // Cars functions
+        async function loadCars() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cars`);
+                const cars = await response.json();
+                renderCars(cars);
+            } catch (error) {
+                console.error('Error loading cars:', error);
+            }
+        }
+
+        function renderCars(cars) {
+            const table = document.getElementById('carsTable');
+            table.innerHTML = `
+                    ${cars.map(car => `
+                        <div class="table-row">
+                            <div class="fieldNames"><strong>Model:</strong> ${car.model}</div>
+                            <div class="fieldNames">
+                                <button class="deleteButton" onclick="deleteCar('${car.id}')">Delete</button>
+                                <button class="updateButton" onclick="goToWorkWithCar('${car.id}')">Modify</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+        }
+
+        async function deleteCar(carId) {
+            try {
+                await fetch(`${API_BASE_URL}/cars/${carId}`, {
+                    method: 'DELETE'
+                });
+                loadCars();
+            } catch (error) {
+                console.error('Error deleting car:', error);
+            }
+        }
+
+        function goToWorkWithCar(carId) {
+            if (carId) {
+                window.location.href = `workWithCar.html?id=${carId}`;
+            } else {
+                window.location.href = 'workWithCar.html';
+            }
+        }
+    </script>
+</body>
+</html>

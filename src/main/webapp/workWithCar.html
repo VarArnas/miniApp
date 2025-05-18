@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mechanic Shops</title>
+    <style>
+        span{
+            color: green;
+        }
+
+        .headerOfWork{
+            margin-top: 50px;
+            margin-left: 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .creationForm{
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 40px;
+            margin-top: 100px;
+            flex-wrap: wrap;
+        }
+
+        .creationItem{
+            width: 45%;
+            margin-left: 10px;
+            color: rgba(255, 255, 255, 0.72);
+            background: rebeccapurple;
+            border-radius: 20px;
+
+        }
+
+        .creationItem > *{
+            margin-left: 20px;
+
+        }
+
+        .creationItem > h3{
+            font-size: 1.5rem;
+        }
+
+        #goBackForm{
+            float: right;
+            margin-right: 100px;
+            width: 150px;
+            height: 50px;
+            margin-top: 200px;
+        }
+
+        #goBackForm > *{
+            height: 100%;
+            width: 100%;
+            font-size: 1.5rem;
+            border-radius: 20px;
+        }
+
+
+        .panelTable{
+            margin-left: 50px;
+            border-spacing: 0 10px;
+
+        }
+
+        .panelTable td{
+            padding-left: 10px;
+            padding-right: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .panelTable td input{
+            border-radius: 20px;
+            border: 2px solid rebeccapurple;
+            width: 300px;
+        }
+
+        .checkBoxes{
+            border-spacing: 0 10px;
+            width: 100%;
+        }
+
+        .checkBoxes td{
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid rebeccapurple;
+            border-bottom: 1px solid white;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .scrollCheck{
+            overflow-y: auto;
+            margin-left: 50px;
+            border-radius: 10px;
+            max-height: 250px;
+            margin-right: 150px;
+            padding: 0;
+
+        }
+
+        .creationButton{
+            margin-top: 50px;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .creationButton * {
+            height: 50px !important;
+            width: 150px !important;
+            font-size: 1.2rem !important;
+            border-radius: 20px !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="./templates/stylesMiniApp.css"/>
+</head>
+<body>
+    <div id="dynamicContentContainer"></div>
+
+    <div>
+        <button class="deleteButton" id="goBackButton">Go Back</button>
+    </div>
+    <script>
+        const API_BASE_URL = '/api';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const carId = urlParams.get('id');
+
+            document.getElementById('goBackButton').addEventListener('click', goToHomePage);
+
+            loadAllParts().then(parts => {
+                if (carId) {
+                    loadCarData(carId, parts);
+                } else {
+                    showCreateView(parts);
+                }
+            });
+        });
+
+        async function loadAllParts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/parts`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading parts:', error);
+                return [];
+            }
+        }
+
+        function showCreateView(parts) {
+            const container = document.getElementById('dynamicContentContainer');
+            container.innerHTML = `
+            <div class="headerOfWork">
+                <h2>Car creation</h2>
+            </div>
+
+            <form id="createCarForm" class="creationForm">
+                <div class="creationItem">
+                    <h3>Input data</h3>
+                    <div class="panelTable">
+                        <label>Model: </label>
+                        <input id="createModel" type="text" required>
+                        <span id="createModelError" style="color: red;"></span>
+                    </div>
+                </div>
+                <div class="creationItem">
+                    <h3>Parts to assign</h3>
+                    <div class="scrollCheck">
+                        ${parts.map(part => `
+                            <div class="checkBoxes">
+                                <input type="checkbox" id="create-part-${part.id}" value="${part.id}">
+                                <label for="create-part-${part.id}">${part.name}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="creationButton">
+                    <button type="submit" class="createButton">Create Car</button>
+                </div>
+            </form>
+        `;
+
+            document.body.insertBefore(container, document.getElementById('goBackButton').parentNode);
+            document.getElementById('createCarForm').addEventListener('submit', handleCreateCar);
+        }
+
+        async function loadCarData(carId, allParts) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cars/${carId}`);
+                const car = await response.json();
+                showUpdateView(car, allParts);
+            } catch (error) {
+                console.error('Error loading car data:', error);
+            }
+        }
+
+        function showUpdateView(car, allParts) {
+            const container = document.getElementById('dynamicContentContainer');
+            container.innerHTML = `
+            <div class="headerOfWork">
+                <h2>Modify car: <span>${car.model}</span></h2>
+            </div>
+
+            <form id="updateCarForm" class="creationForm">
+                <div class="creationItem">
+                    <h3>Change data</h3>
+                    <div class="panelTable">
+                        <label>Model: </label>
+                        <input id="model" type="text" value="${car.model}" required>
+                        <span id="modelError" style="color: red;"></span>
+                    </div>
+                </div>
+                <div class="creationItem">
+                    <h3>Parts to assign/remove</h3>
+                    <div class="scrollCheck">
+                        ${allParts.map(part => `
+                            <div class="checkBoxes">
+                                <input type="checkbox" id="update-part-${part.id}" value="${part.id}"
+                                    ${car.parts && car.parts.includes(part.id) ? 'checked' : ''}>
+                                <label for="update-part-${part.id}">${part.name}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="creationButton">
+                    <button type="submit" class="createButton" style="background: orange; border: 2px solid orange">
+                        Update Car
+                    </button>
+                </div>
+            </form>
+        `;
+
+            document.body.insertBefore(container, document.getElementById('goBackButton').parentNode);
+            document.getElementById('updateCarForm').addEventListener('submit', (e) => handleUpdateCar(e, car.id));
+        }
+
+        async function handleUpdateCar(event, carId) {
+            event.preventDefault();
+
+            const model = document.getElementById('model').value;
+            const checkboxes = document.querySelectorAll('#updateCarForm input[type="checkbox"]:checked');
+            const selectedParts = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/cars/${carId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, parts: selectedParts })
+                });
+
+                if (response.ok) {
+                    goToHomePage();
+                } else {
+                    const error = await response.json();
+                    document.getElementById('modelError').textContent = error.message || 'Error updating car';
+                }
+            } catch (error) {
+                console.error('Error updating car:', error);
+                document.getElementById('modelError').textContent = 'Error updating car';
+            }
+        }
+
+        async function handleCreateCar(event) {
+            event.preventDefault();
+
+            const model = document.getElementById('createModel').value;
+            const checkboxes = document.querySelectorAll('#createCarForm input[type="checkbox"]:checked');
+            const selectedParts = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/cars`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model, parts: selectedParts })
+                });
+
+                if (response.ok) {
+                    goToHomePage();
+                } else {
+                    const error = await response.json();
+                    document.getElementById('createModelError').textContent = error.message || 'Error creating car';
+                }
+            } catch (error) {
+                console.error('Error creating car:', error);
+                document.getElementById('createModelError').textContent = 'Error creating car';
+            }
+        }
+
+        function goToHomePage() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

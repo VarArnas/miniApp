@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mechanic Shops</title>
+    <style>
+        span{
+            color: green;
+        }
+
+        .headerOfWork{
+            margin-top: 50px;
+            margin-left: 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .creationForm{
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 40px;
+            margin-top: 100px;
+            flex-wrap: wrap;
+        }
+
+        .creationItem{
+            width: 45%;
+            margin-left: 10px;
+            color: rgba(255, 255, 255, 0.72);
+            background: rebeccapurple;
+            border-radius: 20px;
+
+        }
+
+        .creationItem > *{
+            margin-left: 20px;
+
+        }
+
+        .creationItem > h3{
+            font-size: 1.5rem;
+        }
+
+        #goBackForm{
+            float: right;
+            margin-right: 100px;
+            width: 150px;
+            height: 50px;
+            margin-top: 200px;
+        }
+
+        #goBackForm > *{
+            height: 100%;
+            width: 100%;
+            font-size: 1.5rem;
+            border-radius: 20px;
+        }
+
+
+        .panelTable{
+            margin-left: 50px;
+            border-spacing: 0 10px;
+
+        }
+
+        .panelTable td{
+            padding-left: 10px;
+            padding-right: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .panelTable td input{
+            border-radius: 20px;
+            border: 2px solid rebeccapurple;
+            width: 300px;
+        }
+
+        .checkBoxes{
+            border-spacing: 0 10px;
+            width: 100%;
+        }
+
+        .checkBoxes td{
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid rebeccapurple;
+            border-bottom: 1px solid white;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .scrollCheck{
+            overflow-y: auto;
+            margin-left: 50px;
+            border-radius: 10px;
+            max-height: 250px;
+            margin-right: 150px;
+            padding: 0;
+
+        }
+
+        .creationButton{
+            margin-top: 50px;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .creationButton * {
+            height: 50px !important;
+            width: 150px !important;
+            font-size: 1.2rem !important;
+            border-radius: 20px !important;
+        }
+
+    </style>
+    <link rel="stylesheet" href="./templates/stylesMiniApp.css"/>
+</head>
+<body>
+    <div id="dynamicContentContainer"></div>
+
+    <div>
+        <button class="deleteButton" id="goBackButton">Go Back</button>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shopId = urlParams.get('id');
+
+            document.getElementById('goBackButton').addEventListener('click', goToHomePage);
+
+            loadAllParts().then(parts => {
+                if (shopId) {
+                    loadShopData(shopId, parts);
+                } else {
+                    showCreateView(parts);
+                }
+            });
+        });
+
+        async function loadAllParts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/parts`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading parts:', error);
+                return [];
+            }
+        }
+
+        function showCreateView(parts) {
+            const container = document.getElementById('dynamicContentContainer');
+            container.innerHTML = `
+                    <div class="headerOfWork">
+                        <h2>Shop creation</h2>
+                    </div>
+
+                    <form id="createShopForm" class="creationForm">
+                        <div class="creationItem">
+                            <h3>Input data</h3>
+                            <div class="panelTable">
+                                <label>Name: </label>
+                                <input id="createName" type="text" required>
+                                <span id="createNameError" style="color: red;"></span>
+                            </div>
+                        </div>
+                        <div class="creationItem">
+                            <h3>Parts to assign</h3>
+                            <div class="scrollCheck">
+                                ${parts.map(part => `
+                                    <div class="checkBoxes">
+                                        <input type="checkbox" id="create-part-${part.id}" value="${part.id}">
+                                        <label for="create-part-${part.id}">${part.name}</label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="creationButton">
+                            <button type="submit" class="createButton">Create Shop</button>
+                        </div>
+                    </form>
+                `;
+
+            document.getElementById('createShopForm').addEventListener('submit', handleCreateShop);
+        }
+
+        async function loadShopData(shopId, allParts) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/shops/${shopId}`);
+                const shop = await response.json();
+                showUpdateView(shop, allParts);
+            } catch (error) {
+                console.error('Error loading shop data:', error);
+            }
+        }
+
+        function showUpdateView(shop, allParts) {
+            const container = document.getElementById('dynamicContentContainer');
+            container.innerHTML = `
+                    <div class="headerOfWork">
+                        <h2>Modify shop: <span>${shop.name}</span></h2>
+                    </div>
+
+                    <form id="updateShopForm" class="creationForm">
+                        <div class="creationItem">
+                            <h3>Change data</h3>
+                            <div class="panelTable">
+                                <label>Name: </label>
+                                <input id="name" type="text" value="${shop.name}" required>
+                                <span id="nameError" style="color: red;"></span>
+                            </div>
+                        </div>
+                        <div class="creationItem">
+                            <h3>Parts to assign/remove</h3>
+                            <div class="scrollCheck">
+                                ${allParts.map(part => `
+                                    <div class="checkBoxes">
+                                        <input type="checkbox" id="update-part-${part.id}" value="${part.id}"
+                                            ${shop.parts && shop.parts.includes(part.id) ? 'checked' : ''}>
+                                        <label for="update-part-${part.id}">${part.name}</label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="creationButton">
+                            <button type="submit" class="createButton" style="background: orange; border: 2px solid orange">
+                                Update Shop
+                            </button>
+                        </div>
+                    </form>
+                `;
+
+            document.getElementById('updateShopForm').addEventListener('submit', (e) => handleUpdateShop(e, shop.id));
+        }
+
+        async function handleUpdateShop(event, shopId) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const checkboxes = document.querySelectorAll('#updateShopForm input[type="checkbox"]:checked');
+            const selectedParts = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/shops/${shopId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, parts: selectedParts })
+                });
+
+                if (response.ok) {
+                    goToHomePage();
+                } else {
+                    const error = await response.json();
+                    document.getElementById('nameError').textContent = error.message || 'Error updating shop';
+                }
+            } catch (error) {
+                console.error('Error updating shop:', error);
+                document.getElementById('nameError').textContent = 'Error updating shop';
+            }
+        }
+
+        async function handleCreateShop(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('createName').value;
+            const checkboxes = document.querySelectorAll('#createShopForm input[type="checkbox"]:checked');
+            const selectedParts = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/shops`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, parts: selectedParts })
+                });
+
+                if (response.ok) {
+                    goToHomePage();
+                } else {
+                    const error = await response.json();
+                    document.getElementById('createNameError').textContent = error.message || 'Error creating shop';
+                }
+            } catch (error) {
+                console.error('Error creating shop:', error);
+                document.getElementById('createNameError').textContent = 'Error creating shop';
+            }
+        }
+
+        function goToHomePage() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

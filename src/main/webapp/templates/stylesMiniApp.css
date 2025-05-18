@@ -72,6 +72,11 @@ body{
     width: 100%;
     margin-left: 10px;
     margin-right: 10px;
+
+}
+
+.flex-item > *{
+    align-items: center;
 }
 
 .fieldNames{
@@ -89,6 +94,7 @@ body{
 }
 
 .table{
+    margin-top: 20px;
     border-spacing: 0 10px;
     margin-left: 20px;
     margin-right: 20px;
@@ -96,6 +102,10 @@ body{
 
 .table tr{
     background: #9e9a9a;
+}
+
+.table-row{
+    text-align: center;
 }
 
 .table tr td:first-child {
