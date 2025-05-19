@@ -2,11 +2,15 @@ package com.example.miniapp.services;
 
 import com.example.miniapp.dtos.carPart.InsertPartDTO;
 import com.example.miniapp.dtos.carPart.UpdatePartDTO;
+import com.example.miniapp.entities.Car;
 import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.entities.MechanicShop;
 import com.example.miniapp.mappers.CarPartMapper;
 import com.example.miniapp.repositories.CarPartRepository;
 import com.example.miniapp.repositories.CarRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +30,9 @@ public class CarPartService {
     private final CarPartRepository carPartRepository;
     private final CarPartMapper carPartMapper;
     private final CarRepository carRepository;
+
+    @PersistenceContext(unitName = "default")
+    private EntityManager em;
 
     //DML
     public void removeCarParts(List<CarPart> carParts){
@@ -47,16 +54,25 @@ public class CarPartService {
     }
 
     public CarPart updateCarPart(UpdatePartDTO partDTO) {
-        CarPart carPart = carPartRepository.findById(partDTO.getId()).orElseThrow();
-        carPartMapper.toCarPart(partDTO, carPart);
+        CarPart part;
+        try{
+            CarPart detachedCarPart = new CarPart();
+            detachedCarPart.setId(partDTO.getId());
+            detachedCarPart.setVersion(partDTO.getVersion());
+            part = em.merge(detachedCarPart);
+        } catch(OptimisticLockException e){
+            System.out.println("exception caught!!!");
+            throw e;
+        }
 
-        carPart.setCars(
+        carPartMapper.toCarPart(partDTO, part);
+        part.setCars(
                 partDTO.getCars().stream()
                         .map(carRepository::getReferenceById)
                         .toList()
         );
 
-        return carPart;
+        return part;
     }
 
     public List<CarPart> reassignCarPartsToMechanic(List<UUID> carParts, MechanicShop shop) {

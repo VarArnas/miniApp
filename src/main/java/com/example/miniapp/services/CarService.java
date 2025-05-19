@@ -8,10 +8,15 @@ import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.mappers.CarMapper;
 import com.example.miniapp.repositories.CarPartRepository;
 import com.example.miniapp.repositories.CarRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,27 +49,25 @@ public class CarService {
     }
 
     public Car updateCar(UpdateCarDTO carDTO) {
-        Car car = carRepository.findById(carDTO.getId()).orElseThrow();
+        Car car = carRepository.findById(carDTO.getId()).orElseThrow(EntityNotFoundException::new);
         carMapper.toCar(carDTO, car);
-
         List<CarPart> deleteCarParts = car.getParts().stream()
-                        .filter(part -> !carDTO.getParts().contains(part.getId()))
-                        .toList();
+                .filter(part -> !carDTO.getParts().contains(part.getId()))
+                .toList();
 
         for (CarPart carPart : deleteCarParts) {
             car.removePart(carPart);
         }
 
         List<UUID> partsIds = car.getParts().stream()
-                        .map(CarPart::getId)
-                        .toList();
+                .map(CarPart::getId)
+                .toList();
 
         carDTO.getParts().forEach(partId -> {
             if(!partsIds.contains(partId)){
                 car.addPart(carPartRepository.getReferenceById(partId));
             }
         });
-
         return car;
     }
 

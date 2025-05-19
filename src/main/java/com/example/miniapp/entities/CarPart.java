@@ -40,6 +40,10 @@ public class CarPart {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Car> cars = new ArrayList<>();
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mechanic_shop_id",
                 nullable = false,

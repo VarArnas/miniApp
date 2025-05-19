@@ -38,14 +38,56 @@
         </div>
     </div>
 
+    <div class="async-demo">
+        <h3>Async Calculation Demo</h3>
+        <button id="startBtn" onclick="startCalculation()">Start Calculation</button>
+        <button id="checkBtn" onclick="checkResult()" style="display: none;">Check Result</button>
+        <div id="calculationResult" style="margin-top: 10px;"></div>
+    </div>
+
     <script>
         const API_BASE_URL = '/api';
 
         document.addEventListener('DOMContentLoaded', function() {
+            checkInitialState();
             loadMechanicShops();
             loadCarParts();
             loadCars();
         });
+
+        async function checkInitialState() {
+            const response = await fetch(`${API_BASE_URL}/timer/initial-status`);
+            const data = await response.json();
+
+            if (data.isRunning || data.isDone) {
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('checkBtn').style.display = 'inline-block';
+                document.getElementById('calculationResult').innerText = "Calculation in progress...";
+            }
+        }
+
+        async function startCalculation() {
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('checkBtn').style.display = 'inline-block';
+            const resultDiv = document.getElementById('calculationResult');
+            resultDiv.innerText = "Calculation started...";
+
+            await fetch('/api/timer/start', {
+                method: 'POST'
+            });
+        }
+
+        async function checkResult() {
+            const resultDiv = document.getElementById('calculationResult');
+            const response = await fetch('/api/timer/status');
+            const data = await response.json();
+
+            if (data.status === "done") {
+                resultDiv.innerText = `Calculation complete! Result: ${data.result}`;
+            } else {
+                resultDiv.innerText = "Still calculating... please wait";
+            }
+        }
 
         // Mechanic Shops functions
         async function loadMechanicShops() {

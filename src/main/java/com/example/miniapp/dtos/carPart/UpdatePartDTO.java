@@ -21,4 +21,6 @@ public class UpdatePartDTO {
     private  List<UUID> cars;
 
     private  UUID mechanicShop;
+
+    private Long version;
 }

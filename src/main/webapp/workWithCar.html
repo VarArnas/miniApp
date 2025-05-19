@@ -248,7 +248,7 @@
                 const response = await fetch(`${API_BASE_URL}/cars/${carId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model, parts: selectedParts })
+                    body: JSON.stringify({ model, parts: selectedParts})
                 });
 
                 if (response.ok) {

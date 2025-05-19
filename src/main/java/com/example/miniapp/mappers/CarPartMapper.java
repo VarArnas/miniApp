@@ -31,13 +31,13 @@ public class CarPartMapper {
     }
 
     public UpdatePartDTO toReturnPartDTONoCars(CarPart carPart) {
-        return new UpdatePartDTO(carPart.getId(), carPart.getName(), new ArrayList<>(), null);
+        return new UpdatePartDTO(carPart.getId(), carPart.getName(), new ArrayList<>(), null, carPart.getVersion());
     }
 
     public UpdatePartDTO toReturnPartDTO(CarPart carPart) {
         List<UUID> ids = carPart.getCars().stream()
                 .map(Car::getId)
                 .toList();
-        return new UpdatePartDTO(carPart.getId(), carPart.getName(), ids, carPart.getMechanicShop().getId());
+        return new UpdatePartDTO(carPart.getId(), carPart.getName(), ids, carPart.getMechanicShop().getId(), carPart.getVersion());
     }
 }

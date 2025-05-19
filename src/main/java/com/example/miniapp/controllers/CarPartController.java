@@ -4,6 +4,7 @@ import com.example.miniapp.dtos.carPart.InsertPartDTO;
 import com.example.miniapp.dtos.carPart.UpdatePartDTO;
 import com.example.miniapp.mappers.CarPartMapper;
 import com.example.miniapp.services.CarPartService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,11 @@ public class CarPartController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePart(@PathVariable UUID id, @RequestBody UpdatePartDTO updatePartDTO) {
         updatePartDTO.setId(id);
-        carPartService.updateCarPart(updatePartDTO);
+        try{
+            carPartService.updateCarPart(updatePartDTO);
+        } catch(OptimisticLockException e){
+            return ResponseEntity.status(409).build();
+        }
         return ResponseEntity.ok().build();
     }
 

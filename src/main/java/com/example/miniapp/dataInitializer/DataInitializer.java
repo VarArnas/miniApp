@@ -13,6 +13,7 @@ import com.example.miniapp.repositories.CarRepository;
 import com.example.miniapp.services.CarPartService;
 import com.example.miniapp.services.CarService;
 import com.example.miniapp.services.ShopService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,10 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
 @Component
@@ -34,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws InterruptedException {
         dataTransactions.first();
 //        dataTransactions.five();
 //        dataTransactions.second();
@@ -66,7 +71,7 @@ public class DataInitializer implements CommandLineRunner {
                 .toList();
 
 
-        UpdatePartDTO updatePartDTO = new UpdatePartDTO(part.getId(), "changedName", carReferences, shops.get(0).getId());
+        UpdatePartDTO updatePartDTO = new UpdatePartDTO(part.getId(), "changedName", carReferences, shops.get(0).getId(), part.getVersion());
         carPartService.updateCarPart(updatePartDTO);
         List<CarPart> parts = carPartService.getAllCarParts();
         List<UUID> changeParts = parts.stream()
@@ -88,11 +93,5 @@ public class DataInitializer implements CommandLineRunner {
 
         carService.createCar(new InsertCarDTO("some new",
                 List.of(parts.get(0).getId(), parts.get(2).getId())));
-
-
     }
-
-
-
-
 }

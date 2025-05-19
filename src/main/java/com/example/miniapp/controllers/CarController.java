@@ -4,6 +4,7 @@ import com.example.miniapp.dtos.car.InsertCarDTO;
 import com.example.miniapp.dtos.car.UpdateCarDTO;
 import com.example.miniapp.mappers.CarMapper;
 import com.example.miniapp.services.CarService;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

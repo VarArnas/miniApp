@@ -226,7 +226,7 @@
             const container = document.getElementById('dynamicContentContainer');
             container.innerHTML = `
                     <div class="headerOfWork">
-                        <h2>Modify part: <span>${part.name}</span></h2>
+                        <h2>Modify part: <span>${part.name}</span> , with version: <span id="versionOfCar">${part.version}</span></h2>
                     </div>
 
                     <form id="updatePartForm" class="creationForm">
@@ -277,6 +277,7 @@
 
             const name = document.getElementById('name').value;
             const shopId = document.getElementById('shop').value;
+            const version = document.getElementById('versionOfCar').innerText;
             const checkboxes = document.querySelectorAll('#updatePartForm input[type="checkbox"]:checked');
             const selectedCars = Array.from(checkboxes).map(checkbox => checkbox.value);
 
@@ -287,12 +288,15 @@
                     body: JSON.stringify({
                         name: name,
                         mechanicShop: shopId,
-                        cars: selectedCars
+                        cars: selectedCars,
+                        version: version
                     })
                 });
 
                 if (response.ok) {
                     goToHomePage();
+                } else if(response.status === 409){
+                    showOptimisticLockDialog();
                 } else {
                     const error = await response.json();
                     document.getElementById('nameError').textContent = error.message || 'Error updating part';
@@ -301,6 +305,29 @@
                 console.error('Error updating part:', error);
                 document.getElementById('nameError').textContent = 'Error updating part';
             }
+        }
+
+        function showOptimisticLockDialog() {
+            const dialog = document.createElement('div');
+            dialog.style.background = '#ffe0e0';
+            dialog.style.border = '2px solid #ff5555';
+            dialog.style.padding = '20px';
+            dialog.style.margin = '20px';
+            dialog.style.textAlign = 'center';
+
+            dialog.innerHTML = `
+        <p><strong>Update failed:</strong> The car was modified by someone else.</p>
+        <button id="refreshPageButton">Refresh Page</button>
+        <button id="goBackHomeButton">Go Back</button>
+    `;
+
+            document.body.insertBefore(dialog, document.getElementById('goBackButton').parentNode);
+
+            document.getElementById('refreshPageButton').addEventListener('click', () => {
+                location.reload();
+            });
+
+            document.getElementById('goBackHomeButton').addEventListener('click', goToHomePage);
         }
 
         async function handleCreatePart(event) {
