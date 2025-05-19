@@ -5,6 +5,7 @@ import com.example.miniapp.dtos.carPart.UpdatePartDTO;
 import com.example.miniapp.entities.Car;
 import com.example.miniapp.entities.CarPart;
 import com.example.miniapp.entities.MechanicShop;
+import com.example.miniapp.interfaces.MeasureExecution;
 import com.example.miniapp.mappers.CarPartMapper;
 import com.example.miniapp.repositories.CarPartRepository;
 import com.example.miniapp.repositories.CarRepository;
@@ -39,8 +40,8 @@ public class CarPartService {
         carPartRepository.deleteAll(carParts);
     }
 
+    @MeasureExecution
     public CarPart createCarPart(InsertPartDTO partDTO) {
-
         CarPart carPart = carPartMapper.toCarPart(partDTO);
 
         carPart.setCars(
@@ -49,10 +50,10 @@ public class CarPartService {
                         .toList()
         );
 
-
         return carPartRepository.save(carPart);
     }
 
+    @MeasureExecution
     public CarPart updateCarPart(UpdatePartDTO partDTO) {
         CarPart part;
         try{
@@ -75,6 +76,7 @@ public class CarPartService {
         return part;
     }
 
+    @MeasureExecution
     public List<CarPart> reassignCarPartsToMechanic(List<UUID> carParts, MechanicShop shop) {
 
         List<CarPart> partsToAdd = carPartRepository.findAllById(carParts);
@@ -96,16 +98,19 @@ public class CarPartService {
         return partsToAdd;
     }
 
+    @MeasureExecution
     public void deleteCarPart(UUID id) {
         carPartRepository.deleteById(id);
     }
 
     //DQL
+    @MeasureExecution
     @Transactional(readOnly = true)
     public List<CarPart> getAllCarParts() {
         return carPartRepository.findAll();
     }
 
+    @MeasureExecution
     @Transactional(readOnly = true)
     public List<CarPart> getPartsByShopId(UUID shopId) {
         return carPartRepository.findAllByMechanicShop_Id(shopId);
@@ -116,6 +121,7 @@ public class CarPartService {
         return carPartRepository.findByCars_Id(carId);
     }
 
+    @MeasureExecution
     @Transactional(readOnly = true)
     public CarPart getCarPartByIdWithCars(UUID carPartId) {
         CarPart part = carPartRepository.findById(carPartId).orElseThrow();
