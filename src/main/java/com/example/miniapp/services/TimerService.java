@@ -12,8 +12,8 @@ public class TimerService {
 
     private CompletableFuture<Integer> counter = new CompletableFuture<>();
     private boolean isRunning = false;
-//    private final ITimerCalculation timerCalculation = TimerConfig.timerCalculation();
-    private final ITimerCalculation timerCalculation;
+    private final ITimerCalculation timerCalculation = TimerConfig.timerCalculation();
+//    private final ITimerCalculation timerCalculation;
 
     public void startTimer() {
         isRunning = true;

@@ -12,7 +12,7 @@ public class StatusDecorator extends TimerCalculationDecorator{
     @Override
     public int calculateResult() {
         System.out.println("Status: started calculation");
-        int result = decoratedCalculation.calculateResult();
+        int result = super.calculateResult();
         System.out.println("Status: completed calculation");
         return result;
     }

@@ -9,7 +9,7 @@ public class ResultDecorator extends TimerCalculationDecorator{
 
     @Override
     public int calculateResult() {
-        int result = decoratedCalculation.calculateResult();
+        int result = super.calculateResult();
         System.out.println("The result of the calculation was: " + result);
         return result;
     }

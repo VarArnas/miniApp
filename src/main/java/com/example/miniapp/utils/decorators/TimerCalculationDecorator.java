@@ -1,6 +1,7 @@
 package com.example.miniapp.utils.decorators;
 
 import com.example.miniapp.interfaces.ITimerCalculation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,5 +13,7 @@ public abstract class TimerCalculationDecorator implements ITimerCalculation {
     }
 
     @Override
-    public abstract int calculateResult();
+    public int calculateResult(){
+        return decoratedCalculation.calculateResult();
+    };
 }
